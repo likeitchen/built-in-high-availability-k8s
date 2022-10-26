@@ -15,16 +15,10 @@
 
 ## 在线一键安装HAProxy组件
 
-- Centos
-
-```bash
-yum install -y haproxy 
-```
-
 - Ubuntu
 
 ```bash
-apt install -y haproxy
+curl -sfL https://cache.wodcloud.com/kubernetes/k8s/haproxy/install-offline.sh | sh -
 ```
 
 ## 安装离线HAProxy核心组件
