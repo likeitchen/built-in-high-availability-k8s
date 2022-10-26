@@ -13,22 +13,6 @@
 
 * haproxy v2.0+
 
-## 准备主机配置清单
-
-```bash
-mkdir -p /etc/kubernetes/ansible && \
-cat > /etc/kubernetes/ansible/hosts.ini <<\EOF
-[master]
-beagle-01 ansible_ssh_host=192.168.192.100 ansible_ssh_port=22 ansible_ssh_user=root
-beagle-02 ansible_ssh_host=192.168.192.101 ansible_ssh_port=22 ansible_ssh_user=root
-beagle-03 ansible_ssh_host=192.168.192.102 ansible_ssh_port=22 ansible_ssh_user=root
-
-[node]
-beagle-04 ansible_ssh_host=192.168.192.103 ansible_ssh_port=22 ansible_ssh_user=root
-beagle-05 ansible_ssh_host=192.168.192.104 ansible_ssh_port=22 ansible_ssh_user=root
-EOF
-```
-
 ## 在线一键安装HAProxy组件
 
 - Centos
@@ -44,4 +28,43 @@ apt install -y haproxy
 ```
 
 ## 安装离线HAProxy核心组件
+
+```bash
+# HTTPS服务器
+export HTTP_SERVER=https://cache.wodcloud.com/kubernetes
+# 平台架构
+export TARGET_ARCH=amd64
+# HAProxy版本
+export HAPROXY_VERSION=2.0.29
+
+
+if ! [ -e /etc/kubernetes/haproxy/haproxy-$HAPROXY_VERSION.tgz ]; then
+mkdir -p /etc/kubernetes/haproxy /opt/haproxy
+# 下载文件
+curl $HTTP_SERVER/k8s/haproxy/$TARGET_ARCH/haproxy-$HAPROXY_VERSION.tgz > /etc/kubernetes/haproxy/haproxy-$HAPROXY_VERSION.tgz
+# 解压文件
+tar xzvf /etc/kubernetes/haproxy/haproxy-$HAPROXY_VERSION.tgz -C /opt/haproxy
+# 安装HAProxy
+bash /opt/haproxy/install.sh
+fi
+```
+
+## 验证安装
+
+```bash
+root@k8s-node-001:~# systemctl status haproxy.service 
+● haproxy.service - HAProxy Load Balancer
+     Loaded: loaded (/etc/systemd/system/haproxy.service; enabled; vendor preset: enabled)
+     Active: active (running) since Wed 2022-10-26 19:10:04 CST; 3min 7s ago
+    Process: 6352 ExecStartPre=/usr/local/bin/haproxy -f /etc/haproxy/haproxy.cfg -c -q (code=exited, status=0/SUCCESS)
+   Main PID: 6355 (haproxy)
+      Tasks: 3 (limit: 2187)
+     Memory: 2.3M
+     CGroup: /system.slice/haproxy.service
+             ├─6355 /usr/local/bin/haproxy -Ws -f /etc/haproxy/haproxy.cfg -p /var/lib/haproxy/haproxy.pid
+             └─6363 /usr/local/bin/haproxy -Ws -f /etc/haproxy/haproxy.cfg -p /var/lib/haproxy/haproxy.pid
+
+Oct 26 19:10:04 k8s-node-001 systemd[1]: Starting HAProxy Load Balancer...
+Oct 26 19:10:04 k8s-node-001 systemd[1]: Started HAProxy Load Balancer.
+```
 
