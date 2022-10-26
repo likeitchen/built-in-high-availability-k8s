@@ -75,4 +75,3 @@ clusters:
     server: https://127.0.0.1:6443
     certificate-authority: /etc/kubernetes/ssl/ca.crt
 ```
-

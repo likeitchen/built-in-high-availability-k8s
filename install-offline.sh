@@ -13,7 +13,7 @@ set -ex
 export HTTP_SERVER=https://cache.wodcloud.com/kubernetes
 # 平台架构
 export TARGET_ARCH=amd64
-# K8S版本
+# HAProxy版本
 export HAPROXY_VERSION=2.0.29
 
 
@@ -23,7 +23,7 @@ mkdir -p /etc/kubernetes/haproxy /opt/haproxy
 curl $HTTP_SERVER/k8s/haproxy/$TARGET_ARCH/haproxy-$HAPROXY_VERSION.tgz > /etc/kubernetes/haproxy/haproxy-$HAPROXY_VERSION.tgz
 # 解压文件
 tar xzvf /etc/kubernetes/haproxy/haproxy-$HAPROXY_VERSION.tgz -C /opt/haproxy
-# 安装Docker
+# 安装HAProxy
 bash /opt/haproxy/install.sh
 fi
 
@@ -39,4 +39,4 @@ cp /opt/haproxy/haproxy.service /etc/systemd/system/haproxy.service
 ls -s /opt/haproxy/haproxy /usr/local/bin/haproxy
 
 systemctl daemon-reload
-systemctl enable haproxy
+systemctl enable haproxy && systemctl restart haproxy
