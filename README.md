@@ -7,7 +7,7 @@
 
 ### 限制条件
 
-* Linux Kernel >= 4.0 , 推荐 Ubuntu 22.04 或者 Centos 7.9
+* Linux Kernel >= 4.0 , 推荐 Ubuntu 22.04
 
 ### 核心组件
 
