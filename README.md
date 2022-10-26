@@ -62,3 +62,17 @@ Oct 26 19:10:04 k8s-node-001 systemd[1]: Starting HAProxy Load Balancer...
 Oct 26 19:10:04 k8s-node-001 systemd[1]: Started HAProxy Load Balancer.
 ```
 
+## 其他Work节点配置
+
+```bash
+ cat  /etc/kubernetes/config/kubelet.conf | head -n 8
+---
+apiVersion: v1
+kind: Config
+clusters:
+- name: local
+  cluster:
+    server: https://127.0.0.1:6443
+    certificate-authority: /etc/kubernetes/ssl/ca.crt
+```
+
