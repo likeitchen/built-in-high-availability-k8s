@@ -1,0 +1,12 @@
+[Unit]
+Description=cc
+ConditionFileIsExecutable=/usr/local/bin/cc
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/cc
+# 若需要开启服务cpu限制，取消注释即可
+#CPUAccounting=yes
+# 限制程序消耗50%cpu资源
+#CPUQuota=50%
+[Install]
+WantedBy=multi-user.target

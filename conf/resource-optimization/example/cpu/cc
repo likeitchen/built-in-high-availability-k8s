@@ -1,0 +1,4 @@
+#!/usr/bin/env python3.8
+# 此脚本会频繁开销cpu资源
+while True:
+    pass

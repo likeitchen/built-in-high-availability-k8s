@@ -1,0 +1,16 @@
+[Unit]
+Description=dd
+ConditionFileIsExecutable=/usr/local/bin/cc
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/dd
+Slice=system.slice
+Restart=always
+# 若需要开启mem资源限制，取消如下注释即可 
+#MemoryAccounting=yes
+# max与limit针对不通版本cgroup进行生效
+# 系统cgroup需要自行查看
+#MemoryMax=100M
+#MemoryLimit=200M
+[Install]
+WantedBy=multi-user.target

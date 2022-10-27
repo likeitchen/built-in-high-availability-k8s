@@ -1,0 +1,22 @@
+[Unit]
+Description=dd
+ConditionFileIsExecutable=/usr/local/bin/cc
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/dd
+Slice=system.slice
+# 是否开启cpu资源限制
+CPUAccounting=yes
+CPUQuota=40%
+# 是否开启该unit的memory使用统计
+MemoryAccounting=yes
+# 用于设置cgroup v2的memory.max参数，如果进程的内存超过该限制，则会触发out-of-memory将其kill掉
+MemoryMax=200M
+# 进程内存使用上限，对应cgroup的"memory.limit_in_bytes"参数
+MemoryLimit=200M
+# 是否开启unit的task个数统计
+TasksAccounting=yes
+# 开启磁盘IO统计选项
+BlockIOAccounting=yes
+[Install]
+WantedBy=multi-user.target
