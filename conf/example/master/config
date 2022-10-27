@@ -1,0 +1,21 @@
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority: /etc/kubernetes/ssl/ca.crt
+    # 若集群为高可用集群，存在vip地址，则此处填写vip实际地址 + 端口即可
+    # 若集群为高可用但是vip地址不存在，则此处填写127.0.0.1 + port 即可
+    server: https://192.168.192.100:6443
+  name: kubernetes
+contexts:
+- context:
+    cluster: kubernetes
+    user: default
+  name: kubernetes
+current-context: kubernetes
+kind: Config
+preferences: {}
+users:
+- name: default
+  user:
+    client-certificate: /etc/kubernetes/ssl/admin.crt
+    client-key: /etc/kubernetes/ssl/admin.key
