@@ -13,9 +13,7 @@
 
 
 
-![高可用架构](artwork\PNG\highly-available-architecture.png)
-
-
+![高可用架构](https://github.com/likeitchen/built-in-high-availability-k8s/tree/dev-test/artwork/PNG/K8S-HAProxy.png)
 
 ### 限制条件
 
