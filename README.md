@@ -22,6 +22,8 @@
 ### 核心组件
 
 * haproxy v2.0+
+* docker 20.10+
+* kubernetes 1.20+
 
 ## 在线一键安装HAProxy组件
 
