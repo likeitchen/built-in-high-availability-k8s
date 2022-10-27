@@ -36,7 +36,7 @@ cp /opt/haproxy/haproxy /opt/bin
 cp /opt/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg
 cp /opt/haproxy/haproxy.service /etc/systemd/system/haproxy.service
 
-ls -s /opt/haproxy/haproxy /usr/local/bin/haproxy
+ln -s /opt/haproxy/haproxy /usr/local/bin/haproxy
 
 systemctl daemon-reload
 systemctl enable haproxy && systemctl restart haproxy
