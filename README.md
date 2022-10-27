@@ -11,7 +11,11 @@
 
 ## 架构图
 
-![image-20221027140418457](C:\Users\XinNing Chen\Documents\GitHub\built-in-high-availability-k8s\README.assets\image-20221027140418457.png)
+
+
+![高可用架构](artwork\PNG\highly-available-architecture.png)
+
+
 
 ### 限制条件
 
