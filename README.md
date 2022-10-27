@@ -13,7 +13,7 @@
 
 
 
-![K8S-HAProxy](https://github.com/likeitchen/built-in-high-availability-k8s/tree/dev-test/artwork/PNG/K8S-HAProxy.png)
+![k8s-haproxy](https://github.com/likeitchen/built-in-high-availability-k8s/blob/dev-test/artwork/PNG/K8S-HAProxy.png)
 
 ### 限制条件
 
@@ -53,7 +53,7 @@ bash /opt/haproxy/install.sh
 fi
 ```
 
-## 验证安装
+### HAProxy验证安装
 
 ```bash
 root@k8s-node-001:~# systemctl status haproxy.service 
@@ -70,13 +70,18 @@ root@k8s-node-001:~# systemctl status haproxy.service
 
 Oct 26 19:10:04 k8s-node-001 systemd[1]: Starting HAProxy Load Balancer...
 Oct 26 19:10:04 k8s-node-001 systemd[1]: Started HAProxy Load Balancer.
+
+root@k8s-node-001:~# haproxy -v
+HA-Proxy version 2.0.29-5e15b0f 2022/05/13 - https://haproxy.org/
 ```
 
-## 其他Work节点配置
+## K8S集群检查
 
-```bash
- cat  /etc/kubernetes/config/kubelet.conf | head -n 8
----
+### master节点配置
+
+- cat /etc/kubernetes/config/kubelet.conf
+
+```yaml
 apiVersion: v1
 kind: Config
 clusters:
@@ -84,4 +89,125 @@ clusters:
   cluster:
     server: https://127.0.0.1:6443
     certificate-authority: /etc/kubernetes/ssl/ca.crt
+users:
+- name: kubelet
+  user:
+    client-certificate: /etc/kubernetes/ssl/kubelet.crt
+    client-key: /etc/kubernetes/ssl/kubelet.key
+contexts:
+- context:
+    cluster: local
+    user: kubelet
+  name: kubelet-context
+current-context: kubelet-context
 ```
+
+- cat /root/.kube/config
+
+```yaml
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority: /etc/kubernetes/ssl/ca.crt
+    server: https://127.0.0.1:6443
+  name: kubernetes
+contexts:
+- context:
+    cluster: kubernetes
+    user: default
+  name: kubernetes
+current-context: kubernetes
+kind: Config
+preferences: {}
+users:
+- name: default
+  user:
+    client-certificate: /etc/kubernetes/ssl/admin.crt
+    client-key: /etc/kubernetes/ssl/admin.key
+```
+
+### work节点配置
+
+- /etc/haproxy/haproxy.cfg
+
+```bash
+global
+  maxconn  2000
+  log  127.0.0.1 local0 err
+
+defaults
+  log global
+  mode  http
+  option  httplog
+  timeout connect 5000
+  timeout client  50000
+  timeout server  50000
+  timeout http-request 15s
+  timeout http-keep-alive 15s
+  retries 3
+  maxconn  2000
+
+listen  stats
+        bind    0.0.0.0:8888
+        stats   refresh 30s
+        stats   uri /
+        stats   realm   baison-test-Haproxy
+        stats   auth    beagle:beagle
+        bind-process    1
+
+frontend k8s-master
+  bind 0.0.0.0:8080
+  bind 127.0.0.1:8080
+  mode tcp
+  option tcplog
+  tcp-request inspect-delay 5s
+  default_backend k8s-master
+
+backend k8s-master
+  mode tcp
+  option tcplog
+  option tcp-check
+  balance roundrobin
+  default-server inter 10s downinter 5s rise 2 fall 2 slowstart 60s maxconn 250 maxqueue 256 weight 100
+  server k8s-master01    192.168.192.100:6443  check
+  server k8s-master02    192.168.192.101:6443  check
+  server k8s-master03    192.168.192.102:6443  check
+```
+
+- cat /etc/kubernetes/config/kubelet.conf 
+
+```yaml
+apiVersion: v1
+kind: Config
+clusters:
+- name: local
+  cluster:
+    server: https://127.0.0.1:8080
+    certificate-authority: /etc/kubernetes/ssl/ca.crt
+users:
+- name: kubelet
+  user:
+    client-certificate: /etc/kubernetes/ssl/kubelet.crt
+    client-key: /etc/kubernetes/ssl/kubelet.key
+contexts:
+- context:
+    cluster: local
+    user: kubelet
+  name: kubelet-context
+current-context: kubelet-context
+```
+
+### 最终结果
+
+* 此时，整个集群仅有一个master节点kube-apiserver正常，但是丝毫不影响work节点正常运行。
+
+```bash
+root@k8s-master-003:~# kubectl get nodes
+NAME              STATUS     ROLES    AGE   VERSION
+192.168.192.100   NotReady   master   22m   v1.20.9-beagle
+192.168.192.101   NotReady   master   22m   v1.20.9-beagle
+192.168.192.102   Ready      master   22m   v1.20.9-beagle
+192.168.192.103   Ready      <none>   20m   v1.20.9-beagle
+192.168.192.104   Ready      <none>   20m   v1.20.9-beagle
+```
+
