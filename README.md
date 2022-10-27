@@ -13,7 +13,7 @@
 
 
 
-![K8S-HAProxy](https://github.com/likeitchen/built-in-high-availability-k8s/blob/dev-test/artwork/PNG/K8S-HAProxy.png)
+![K8S-HAProxy](https://github.com/likeitchen/built-in-high-availability-k8s/tree/dev-test/artwork/PNG/K8S-HAProxy.png)
 
 ### 限制条件
 
