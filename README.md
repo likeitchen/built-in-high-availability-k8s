@@ -5,6 +5,14 @@
 * 搭建过程支持在线以及离线，离线情况避免访问外网无法在线安装问题
 * 两三行命令即可完成集群环境适配
 
+## 概述
+
+每个work节点部署一个haproxy（负载均衡），所有master的核心组件连接本地kube-apiserver，所有工作节点通过haproxy代理到多个master的kube-apiserver，如果当前集群或者部署环境无法提供外部负载或者vip，可以采用此种方法进行集群高可用部署
+
+## 架构图
+
+![image-20221027140418457](C:\Users\XinNing Chen\Documents\GitHub\built-in-high-availability-k8s\README.assets\image-20221027140418457.png)
+
 ### 限制条件
 
 * Linux Kernel >= 4.0 , 推荐 Ubuntu 22.04
